@@ -67,7 +67,7 @@ export default function RootLayout({
       duration: 600,
       easing: 'ease-out-sine',
     })
-  })
+  },[])
 
   return (
     <html lang="en">
