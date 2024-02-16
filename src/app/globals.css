@@ -1,0 +1,65 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@500&display=swap');
+
+
+.animated-container {
+    overflow: hidden;
+}
+
+.animatedFromLeft {
+    opacity: 0;
+    /* transform: translateX(-100%); */
+    animation: fadeInFromLeft 0.75s ease-out forwards;
+}
+
+@keyframes fadeInFromLeft {
+    0% {
+        opacity: 0;
+        transform: translateX(-30%);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.animatedFromRight {
+    opacity: 0;
+    /* transform: translateX(-100%); */
+    animation: fadeInFromRight 0.75s ease-out forwards;
+}
+
+@keyframes fadeInFromRight {
+    0% {
+        opacity: 0;
+        transform: translateX(30%);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.animatedFromBottom {
+    opacity: 0;
+    /* transform: translateX(-100%); */
+    animation: fadeInFromBottom 0.75s ease-out forwards;
+}
+
+@keyframes fadeInFromBottom {
+    0% {
+        opacity: 0;
+        transform: translateY(15%);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
