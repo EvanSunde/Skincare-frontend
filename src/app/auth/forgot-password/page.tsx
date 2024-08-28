@@ -1,16 +1,10 @@
 'use client'
+import { NODEMAILER_EMAIL } from "@/apollo_client/Mutation";
 import ToastMessage from "@/components/utils/ToastMessage";
-import { gql, useMutation } from "@apollo/client";
+import { useMutation } from "@apollo/client";
 import Link from "next/link";
 import { useState } from "react";
 import { IoArrowBack } from "react-icons/io5";
-
-const NODEMAILER_EMAIL = gql`
-mutation Nodemaileremail($email: String!) {
-    nodemaileremail(email: $email) {
-    message,status
-}
-}`
 
 const Page = () => {
     const [email, setEmail] = useState<string>("");

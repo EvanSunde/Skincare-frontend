@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react';
 import { NextPage } from 'next';
 import Sidebar from '@/app/dashboard/components/sidebar';
 import { Appointments } from '@/data/AppointmentData';
-import { useDashboardStore } from '../../../stores/DashboardStore';
 import AppointmentPageContainer from './components/AppointmentPageContainer';
 import ToastMessage from '@/components/utils/ToastMessage';
 import { gql, useLazyQuery } from '@apollo/client';
@@ -13,64 +12,59 @@ import { useLoadingStore } from '@/stores/LoadingStore';
 import Loader from '@/components/Loader';
 import { useAuthorizedStore } from '@/stores/AuthorizedStore';
 import { getCookie } from '@/components/utils/Cookie';
+import { GET_APPOINTMENT_DATA, GET_USER_INFO } from '@/apollo_client/Queries';
+import { useDashboardStore } from '@/stores/DashboardStore';
 
 interface PageProps {
     params: {
         id: string;
     };
 }
-const GET_USER_INFO = gql`
-  query GetUserInfoByToken {
-    getUserInfoByToken {
-    status
-    message
-    user {
-      email
-      phoneNumber
-      photo
-      country
-      city
-      name
-      age
-      gender
-    }
-  }
-    }`
-
 
 const Page: NextPage<PageProps> = ({ params }) => {
-    const appointment = Appointments.find(appointment => appointment.appointment_id === params.id);
-    const setAppointmentSelected = useDashboardStore((state) => state.setAppointmentSelected);
+    const [getAppointmentByEmail] = useLazyQuery(GET_APPOINTMENT_DATA);
     const [getUserInfoByToken] = useLazyQuery(GET_USER_INFO, {
         fetchPolicy: "no-cache"
     });
-
+    const setAppointmentSelected = useDashboardStore((state) => state.setAppointmentSelected)
     const setUserInfo = useUserStore((state) => state.setUserInfo);
     const setIsLoading = useLoadingStore((state) => state.setIsLoading)
     const isLoading = useLoadingStore((state) => state.isLoading)
     const router = useRouter();
     const isAuthorized = useAuthorizedStore((state) => state.isAuthorized);
     const setIsAuthorized = useAuthorizedStore((state) => state.setIsAuthorized);
+    const setAppointmentArray = useDashboardStore((state) => state.setAppointmentArray);
+    const appointmentArray = useDashboardStore((state) => state.appointmentArray);
+    const appointment = appointmentArray.find(appointment => appointment._id === params.id);
 
     useEffect(() => {
-        setAppointmentSelected(false)
+        const getAppointmentByEmailFunction = async () => {
+            try {
+                if (appointmentArray.length === 0) {
+                    const response = await getAppointmentByEmail();
+                    const appointmentsFromResponse = response.data.getAppointmentByEmail.appointments;
+                    setAppointmentArray(appointmentsFromResponse)
+                    console.log(response, "response from useeeffect ")
+                }
+            } catch (error) {
+                console.error("Error fetching appointment data:", error);
+            }
+        };
+        getAppointmentByEmailFunction();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
-
+    }, []);
 
     useEffect(() => {
-        let isMounted = true; // Flag to track component mount state
+        let isMounted = true;
         const token = getCookie("token");
-
+        setAppointmentSelected(false);
         const getUserInfo = async () => {
             try {
                 if (token) {
                     if (!isAuthorized) {
 
                         const response = await getUserInfoByToken();
-                        console.log(response, "from useeffect from landing");
-
-                        if (!isMounted) return; // Skip state updates if component is unmounted
+                        if (!isMounted) return;
 
                         const { status, message, user } = response.data.getUserInfoByToken;
                         if (user) {
@@ -85,7 +79,6 @@ const Page: NextPage<PageProps> = ({ params }) => {
                             ToastMessage(status, message)
                         }
                     }
-
                 }
                 else {
                     router.replace('/auth')
@@ -95,7 +88,6 @@ const Page: NextPage<PageProps> = ({ params }) => {
                 setIsLoading(false);
             } catch (error) {
                 console.error("Error fetching user info:", error);
-                // Handle any error or perform cleanup actions
             }
         };
 
@@ -103,18 +95,15 @@ const Page: NextPage<PageProps> = ({ params }) => {
             getUserInfo();
         }
 
-        // Cleanup function
         return () => {
-            isMounted = false; // Update flag to indicate component unmount
-            // Perform cleanup actions here if needed
-            // For example: Clear any timers or subscriptions
+            isMounted = false;
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return (
-        <main className='w-full h-screen flex justify-center items-center bg-[#f6f8fc] relative'>
-            { isLoading ? <Loader /> : 
+        <main className='w-full h-screen flex justify-center items-center bg-[#f6f8fc] relative' style={{ height: "100dvh" }}>
+            {isLoading ? <Loader /> :
                 <>
                     <Sidebar />
                     <AppointmentPageContainer appointmentData={appointment} />

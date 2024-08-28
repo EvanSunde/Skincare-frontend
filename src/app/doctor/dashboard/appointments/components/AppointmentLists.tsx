@@ -5,28 +5,25 @@ import React, { useEffect, useState } from 'react';
 import { IoArrowForward } from "react-icons/io5";
 import { IoIosCalendar } from "react-icons/io";
 import Alphabet from '@/assets/alphabet.png';
-import { Appointments } from '@/data/AppointmentData';
-import Link from 'next/link';
-import { useLoadingStore } from "@/stores/LoadingStore";
 import { MdOutlineComputer } from "react-icons/md";
 import { useRouter } from "next/navigation";
+import { useDoctorArrayStore } from "@/stores/DoctorAppointmentArray";
 
 
 const AppointmentLists = () => {
     const appointmentSelected = useDashboardStore((state) => state.appointmentSelected);
     const selectedAppointmentFilter = useDashboardStore((state) => state.selectedAppointmentFilter);
-    const setIsLoading = useLoadingStore((state) => state.setIsLoading);
     const selectedAppointmentId = useDashboardStore((state) => state.selectedAppointmentId)
     const setSelectedAppointmentId = useDashboardStore((state) => state.setSelectedAppointmentId);
     const [windowWidth, setWindowWidth] = useState<number>(0);
     const router = useRouter();
+    const appointmentArray = useDoctorArrayStore((state) => state.DoctorArrayStore);
 
     const handleAppointmentClicked = (id: string) => {
-        setIsLoading(true)
         setSelectedAppointmentId(id)
         router.push(`/doctor/dashboard/appointments/${id}`);
     }
-    const filteredAppointments = Appointments.filter(appointment => {
+    const filteredAppointments = appointmentArray.filter(appointment => {
         if (selectedAppointmentFilter === "Upcoming") {
             return !appointment.completed;
         } else if (selectedAppointmentFilter === "Past") {
@@ -54,7 +51,7 @@ const AppointmentLists = () => {
     return (
         <div className={`w-[90%] lg:w-96 h-auto mb-24 lg:mb-0 mt-4 lg:mt-0 lg:max-h-[650px] gap-y-5 lg:flex flex-col overflow-auto no-scrollbar ${appointmentSelected ? "hidden" : "flex"}`}>
             {filteredAppointments.map((appointment, index) => (
-                windowWidth > 1024 && selectedAppointmentId === appointment.appointment_id ?
+                windowWidth > 1024 && selectedAppointmentId === appointment._id ?
                     <div className='w-full h-40 bg-white border border-[#743bfb] rounded-[8px] cursor-pointer' key={index}>
                         {/* ---card Top-------- */}
                         <div className='flex items-center justify-between mt-2 '>
@@ -65,8 +62,8 @@ const AppointmentLists = () => {
                         <div className='flex items-center py-2 h-auto'>
                             <Image src={Alphabet} width={200} height={200} alt='Appointment Image' className='w-[70px] h-[70px] rounded-[7px] ml-3 mr-3' />
                             <div className='flex flex-col items-start h-[60px]'>
-                                <p className='text-lg font-semibold'>{appointment.name}</p>
-                                <p className='text-sm font-medium text-gray-500'> {appointment.description}</p>
+                                <p className='text-lg font-semibold'>{appointment.fullName}</p>
+                                <p className='text-sm font-medium text-gray-500'> {appointment.reasonForVisit}</p>
                             </div>
                         </div>
                         {/* ---card bottom-------- */}
@@ -80,7 +77,7 @@ const AppointmentLists = () => {
                         key={index}
                         onClick={() => {
 
-                            handleAppointmentClicked(appointment.appointment_id)
+                            handleAppointmentClicked(appointment._id)
                         }}>
                         {/* ---card Top-------- */}
                         <div className='flex items-center justify-between mt-2 '>
@@ -91,8 +88,8 @@ const AppointmentLists = () => {
                         <div className='flex items-center py-2 h-auto'>
                             <Image src={Alphabet} width={200} height={200} alt='Appointment Image' className='w-[70px] h-[70px] rounded-[8px] ml-3 mr-3' />
                             <div className='flex flex-col items-start h-[60px]'>
-                                <p className='text-lg font-semibold'>{appointment.name}</p>
-                                <p className='text-sm text-gray-500 font-medium'> {appointment.description}</p>
+                                <p className='text-lg font-semibold'>{appointment.fullName}</p>
+                                <p className='text-sm text-gray-500 font-medium'> {appointment.reasonForVisit}</p>
                             </div>
                         </div>
                         {/* ---card bottom-------- */}

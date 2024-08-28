@@ -1,0 +1,6 @@
+User-agent: *
+Disallow: /dashboard/profile
+Disallow: /dashboard/appointments
+Disallow: /dashboard/settings
+Disallow: /dashboard/appointments/
+Disallow: /auth/

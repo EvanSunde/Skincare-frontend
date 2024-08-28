@@ -1,7 +1,6 @@
 'use client'
 import Image from 'next/image'
 import React, { useState } from 'react'
-import nurse from '@/assets/girl.jpg'
 import { Signin } from './components/AuthFormComponent'
 
 const Page = () => {

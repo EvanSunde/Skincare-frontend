@@ -1,9 +1,10 @@
 import ToastMessage from "@/components/utils/ToastMessage";
 import { setCookie } from "@/components/utils/Cookie";
-import { gql, useMutation } from "@apollo/client";
+import { useMutation } from "@apollo/client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
+import { LOGIN_DOCTOR } from "@/apollo_client/Mutation";
 
 const validateEmail = (email: string): boolean => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -14,19 +15,12 @@ const validatePassword = (password: string): boolean => {
     return password.length >= 8;
 };
 
-const LOGIN_USER = gql`
-mutation LoginDoctor($email: String!, $password: String!) {
-    loginDoctor(email: $email, password: $password) {
-      status message name token
-    }
-  }
-`
 export const Signin = () => {
     const [email, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");
     const [emailError, setEmailError] = useState<string | null>(null);
     const [passwordError, setPasswordError] = useState<string | null>(null);
-    const [loginDoctor, { data: loginUserData, loading: loginUserLoading, error: loginUserError }] = useMutation(LOGIN_USER);
+    const [loginDoctor, { data: loginUserData, loading: loginUserLoading, error: loginUserError }] = useMutation(LOGIN_DOCTOR);
     const router = useRouter();
 
     const handleSignin = async () => {
@@ -51,7 +45,8 @@ export const Signin = () => {
             const { status, message, token } = loginResponse.data.loginDoctor;
             ToastMessage(status, message);
             if (token) {
-                setCookie(86400, "doctor-token", `Bearer ${token}`)
+                setCookie(86400, "doctor-token", `Bearer ${token}`);
+                window.location.reload();
                 router.push('/doctor/dashboard/appointments');
             }
         } catch (error) {
@@ -59,11 +54,26 @@ export const Signin = () => {
         }
     };
 
+    const handleSigninGuest = async () => {
+        const loginResponse = await loginDoctor({
+            variables: {
+                "email": "bhujelaman20@gmail.com",
+                "password": "amanamanaman"
+            }
+        });
+        const { status, message, token } = loginResponse.data.loginDoctor;
+        ToastMessage(status, message);
+        if (token) {
+            setCookie(86400, "doctor-token", `Bearer ${token}`);
+            window.location.reload();
+            router.push('/doctor/dashboard/appointments');
+        }
+    }
+
     return (
         <div className='w-full lg:w-[50%] h-full  flex flex-col items-center'>
             <div className='w-[80%] sm:w-[70%] md:w-[60%] lg:w-[75%] xl:w-[65%] 2xl:w-[50%] mt-[15%]'>
                 <p className='text-4xl'>Sign in</p>
-                <p className='font-semibold text-4xl mt-3'> 30-day free trial</p>
                 <label htmlFor="email" className="block text-gray-700 text-sm mt-4 mb-2">
                     Email
                 </label>
@@ -94,9 +104,8 @@ export const Signin = () => {
                     required
                 />
                 {passwordError && <p className="text-red-500 text-sm">{passwordError}</p>}
-                <Link href={'/auth/forgot-password'}>
-                </Link>
                 <button className='h-10 bg-[#8045f7] hover:bg-[#9768f3] mt-10 w-full rounded-[7px] text-white' onClick={handleSignin}>Sign in</button>
+                <button className='h-10 bg-[#8045f7] hover:bg-[#9768f3] mt-10 w-full rounded-[7px] text-white' onClick={handleSigninGuest}>Sign in as Guest</button>
             </div>
         </div>
     )

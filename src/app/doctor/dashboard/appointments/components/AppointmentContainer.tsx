@@ -6,18 +6,18 @@ import AppointmentFilter from './AppointmentFilter';
 import AppointmentLists from './AppointmentLists';
 import AppointmentDescription from './AppointmentDescription';
 import { useDashboardStore } from '@/stores/DashboardStore';
-interface Appointment {
-    name: string;
-    description: string;
-    appointment_id: string;
-    report_id: string;
-    appointmentDate: string;
-    bookedDate: string;
-    timezone: string;
-    time: string;
+export interface Appointment {
+    _id: string;
     completed: boolean;
-    language: string;
-    getStatus: string;
+    fullName: string;
+    email: string;
+    appointmentDate: string;
+    appointmentTime: string;
+    timezone: string;
+    comment: string;
+    reasonForVisit: string;
+    allergies: string;
+    checkoutSessionId?: string;
 }
 
 interface AppointmentInfoProps {

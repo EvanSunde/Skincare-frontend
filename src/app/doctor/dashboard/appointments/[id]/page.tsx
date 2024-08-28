@@ -6,16 +6,17 @@ import AppointmentContainer from '../components/AppointmentContainer';
 import { useDashboardStore } from '@/stores/DashboardStore';
 import Profile from '@/assets/beautiful-nurse.png'
 import Image from 'next/image';
-import { useUserStore } from '@/stores/userStore';
 import { useLogoutStore } from '@/stores/LogoutStore';
 import { IoMdArrowDropdown } from 'react-icons/io';
 import { useDoctorStore } from '@/stores/DoctorStore';
 import { getCookie } from '@/components/utils/Cookie';
-import { gql, useLazyQuery } from '@apollo/client';
+import { useLazyQuery } from '@apollo/client';
 import ToastMessage from '@/components/utils/ToastMessage';
 import { useRouter } from 'next/navigation';
 import { useLoadingStore } from '@/stores/LoadingStore';
 import Loader from '@/components/Loader';
+import { GET_DOCTOR_APPOINTMENTS, GET_DOCTOR_INFO_BY_TOKEN } from '@/apollo_client/Queries';
+import { useDoctorArrayStore } from '@/stores/DoctorAppointmentArray';
 
 interface PageProps {
     params: {
@@ -23,18 +24,11 @@ interface PageProps {
     };
 }
 
-const GET_DOCTOR_INFO_BY_TOKEN = gql`
-query GetDoctorInfoByToken($token: String!) {
-    getDoctorInfoByToken(token: $token) {
-      name
-      email
-      status
-      message
-    }
-  }`;
-
 const Page: NextPage<PageProps> = ({ params }) => {
     const [getDoctorInfoByToken] = useLazyQuery(GET_DOCTOR_INFO_BY_TOKEN, {
+        fetchPolicy: "no-cache"
+    });
+    const [getAllAppointmentsForDoctor] = useLazyQuery(GET_DOCTOR_APPOINTMENTS, {
         fetchPolicy: "no-cache"
     });
     const setActiveSidebarItem = useDashboardStore((state) => state.setActiveSidebarItem);
@@ -47,15 +41,33 @@ const Page: NextPage<PageProps> = ({ params }) => {
     const router = useRouter();
     const isLoading = useLoadingStore((state) => state.isLoading)
     const setIsLoading = useLoadingStore((state) => state.setIsLoading)
+    const DoctorArray = useDoctorArrayStore((state) => state.DoctorArrayStore);
+    const setDoctorArray = useDoctorArrayStore((state) => state.setDoctorArrayStore);
+    const appointment = DoctorArray.find(appointment => appointment._id === params.id);
 
     const handleDropdownToggle = () => {
         setIsDropdownOpen(!isDropdownOpen);
     };
 
     const handleLogout = () => {
-        setIsLogoutModalOpen(true);
-    };
+        const cookieName = 'doctor-token';
+        const cookiePath = '/';
+        const domain = window.location.hostname;
+        const existingCookie = document.cookie
+            .split(';')
+            .map((c) => c.trim())
+            .find((cookie) => cookie.startsWith(`${cookieName}=`));
 
+        if (existingCookie) {
+            document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=${cookiePath}; domain=${domain};`;
+            ToastMessage('success', 'Logged out successfully');
+            setIsLogoutModalOpen(false);
+            setIsLoading(true);
+            router.replace('/');
+            window.location.reload();
+        }
+    };
+    
     useEffect(() => {
         setIsLoading(true)
 
@@ -88,6 +100,23 @@ const Page: NextPage<PageProps> = ({ params }) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
+    useEffect(() => {
+        const getAppointments = async () => {
+            try {
+                if (DoctorArray.length === 0) {
+                    const response = await getAllAppointmentsForDoctor();
+                    const appointmentsFromResponse = response.data.getAllAppointmentsForDoctor.appointments;
+                    setDoctorArray(appointmentsFromResponse);
+                    console.log(response.data.getAllAppointmentsForDoctor.appointments, "response from get appointments");
+                }
+            } catch (error) {
+                console.error("Error fetching appointment data:", error);
+            }
+        };
+        getAppointments();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -108,20 +137,19 @@ const Page: NextPage<PageProps> = ({ params }) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    const appointment = Appointments.find(appointment => appointment.appointment_id === params.id);
 
     return (
         <main className='w-full h-auto flex flex-col justify-center overflow-auto items-center bg-[#f6f8fc] relative'>
             {isLoading ?
                 <div className='w-full h-screen grid items-center'><Loader /> </div> :
                 <>
-                    <div className='w-full  min-h-20 lg:mt-4 xl:mt-0 2xl:min-h-24 flex items-center justify-between border-b-2'>
+                    <div className='w-full  hidden lg:flex min-h-20 lg:mt-4 xl:mt-0 2xl:min-h-24 items-center justify-between border-b-2'>
                         <div className='lg:ml-16 xl:ml-14 '>
-                            <p className='text-2xl lg:text-3xl font-semibold'>Dr {doctorName} dashboard</p>
+                            <p className='text-xl md:text-2xl lg:text-3xl font-semibold'>Dr {doctorName}</p>
                             <p className='text-sm lg:text-base text-gray-700'>Welcome to Nephara Skincare!</p>
                         </div>
                         <div className="flex items-center justify-center mr-[10%] relative cursor-pointer" onClick={handleDropdownToggle} >
-                            <Image src={Profile} alt='Profile' width={100} height={100} className='w-14 h-14 border rounded-full object-cover' />
+                            <Image src={Profile} alt='Profile' width={100} height={100} className='w-14 h-14 border rounded-full object-cover' placeholder='blur' blurDataURL={"data:image/jpeg;base64,/9j//gAQTGF2YzYwLjMxLjEwMgD/2wBDAAgEBAQEBAUFBQUFBQYGBgYGBgYGBgYGBgYHBwcICAgHBwcGBgcHCAgICAkJCQgICAgJCQoKCgwMCwsODg4RERT/xABqAAEBAQEAAAAAAAAAAAAAAAAGBAMHAQEBAQAAAAAAAAAAAAAAAAAAAQIQAAEDAwIGAwEAAAAAAAAAAAIDBAEABRIhEUExFAdREyIyBqERAAMBAAIDAQAAAAAAAAAAAAABEQISITGBQQP/wAARCAAJABQDARIAAhIAAxIA/9oADAMBAAIRAxEAPwDg7SLfOfVm4DlgSAgfnfISkf4VYRzmgAFnbhv20Wv5j+oVUNl0xYA9VcMm8q5DkUq26FVfYmnlKKZYpmX2KNIknwrX5ZzraWtLKvbdk9GS5aVqvRCq7jbRur8bYoqbCHTiGRraKk2hQvSSkbR8pT2mdI14VJV1x5a4tvNcvmfCAH//2Q=="} />
                             <p className='ml-3 font-semibold lg:text-lg'>Welcome {doctorName}</p>
                             <i className='text-2xl ml-3 cursor-pointer'><IoMdArrowDropdown /></i>
                             {isDropdownOpen && (

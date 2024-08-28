@@ -1,9 +1,10 @@
 'use client'
 import React, { useState } from 'react';
 import { NextPage } from 'next';
-import { gql, useMutation } from '@apollo/client';
+import { useMutation } from '@apollo/client';
 import ToastMessage from "@/components/utils/ToastMessage";
 import Link from 'next/link';
+import { RESET_PASSWORD } from '@/apollo_client/Mutation';
 
 interface PageProps {
     params: {
@@ -11,13 +12,6 @@ interface PageProps {
     };
 }
 
-const RESET_PASSWORD = gql`
-    mutation ResetPassword($newPassword: String!, $sentToken: String!) {
-        resetPassword(newPassword: $newPassword, sentToken: $sentToken) {
-        message,status
-    }
-  }
-`;
 const Page: NextPage<PageProps> = ({ params }) => {
     const [password, setPassword] = useState<string>("");
     const [passwordChanged, setPasswordChanged] = useState<Boolean>(false);
@@ -63,16 +57,16 @@ const Page: NextPage<PageProps> = ({ params }) => {
                 {passwordChanged ?
                     (
                         <div className='w-[80%] sm:w-[70%] md:w-[60%] lg:w-[75%] xl:w-[65%] 2xl:w-[50%] mt-[15%]'>
-                        <p className='font-bold text-4xl mt-3'>Check Your Email</p>
-                        <p className="text-sm text-gray-500 mt-4">
-                            Password changed successfully.You can now login with your new password.
-                        </p>
-                        <Link href="/auth">
-                            <button className='h-10 bg-[#8045f7] hover:bg-[#9768f3] mt-10 w-full rounded-[7px] text-white'>
-                                Go to Login
-                            </button>
-                        </Link>
-                    </div>
+                            <p className='font-bold text-4xl mt-3'>Check Your Email</p>
+                            <p className="text-sm text-gray-500 mt-4">
+                                Password changed successfully.You can now login with your new password.
+                            </p>
+                            <Link href="/auth">
+                                <button className='h-10 bg-[#8045f7] hover:bg-[#9768f3] mt-10 w-full rounded-[7px] text-white'>
+                                    Go to Login
+                                </button>
+                            </Link>
+                        </div>
                     )
                     :
                     (<div className='w-[80%] sm:w-[70%] md:w-[60%] lg:w-[75%] xl:w-[65%] 2xl:w-[50%] mt-[15%]'>

@@ -1,0 +1,64 @@
+import { cn } from "@/utils/cn";
+import React from "react";
+import Navbar from '@/components/navbar/Navbar';
+import Footer from '@/components/Footer';
+import Link from 'next/link';
+import { BentoGrid, BentoGridItem } from "./components/grid";
+import Image from 'next/image';
+
+const BentoGridSecondDemo = () => {
+
+    const Skeleton = () => (
+        <div className="flex flex-1 w-full h-full min-h-[6rem] rounded-xl bg-gradient-to-br from-neutral-200 dark:from-neutral-900 dark:to-neutral-800 to-neutral-100"></div>
+      );
+
+    const items = [
+        {
+          title: "The Dawn of Innovation",
+          description: "Explore the birth of groundbreaking ideas and inventions.",
+          header: <Skeleton />,
+          className: "md:col-span-3",
+          image: <Image src="https://e1.pxfuel.com/desktop-wallpaper/1022/228/desktop-wallpaper-cool-anime-for-ps4-ps4-banners-anime-girl.jpg" alt="Icon" width={16} height={16} />,
+        },
+        {
+          title: "The Digital Revolution",
+          description: "Dive into the transformative power of technology.",
+          header: <Skeleton />,
+          className: "md:col-span-1",
+          icon: <Image src="https://e1.pxfuel.com/desktop-wallpaper/1022/228/desktop-wallpaper-cool-anime-for-ps4-ps4-banners-anime-girl.jpg" alt="Icon" width={16} height={16} />,        },
+        {
+          title: "The Art of Design",
+          description: "Discover the beauty of thoughtful and functional design.",
+          header: <Skeleton />,
+          className: "md:col-span-1",
+          icon: <Image src="https://e1.pxfuel.com/desktop-wallpaper/1022/228/desktop-wallpaper-cool-anime-for-ps4-ps4-banners-anime-girl.jpg" alt="Icon" width={16} height={16} />,        },
+        {
+          title: "The Power of Communication",
+          description:
+            "Understand the impact of effective communication in our lives.",
+          header: <Skeleton />,
+          className: "md:col-span-1",
+          icon: <Image src="https://e1.pxfuel.com/desktop-wallpaper/1022/228/desktop-wallpaper-cool-anime-for-ps4-ps4-banners-anime-girl.jpg" alt="Icon" width={16} height={16} />,        },
+      ];
+    return (
+        <div className='flex flex-col min-h-screen bg-white'>
+        <Navbar />
+   <BentoGrid className="max-w-4xl mx-auto md:auto-rows-[20rem]">
+      {items.map((item, i) => (
+        <BentoGridItem
+          key={i}
+          title={item.title}
+          description={item.description}
+          header={item.header}
+          className={item.className}
+          icon={item.image}
+        />
+      ))}
+    </BentoGrid>
+            <Footer />
+            </div>
+    );
+};
+
+
+export default BentoGridSecondDemo;

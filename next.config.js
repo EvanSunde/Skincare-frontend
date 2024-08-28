@@ -1,8 +1,17 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {
-    images: {
-        domains: ['cdna.artstation.com','r2.starryai.com','img.freepik.com' ]
-      },
-}
 
-module.exports = nextConfig
+const withPWA = require("next-pwa")({
+  dest: "public",
+  register: true,
+  skipWaiting: true,
+  disable: process.env.NODE_ENV === "development",
+});
+
+const nextConfig = {
+  reactStrictMode: true,
+  images: {
+    domains: ["nephara-skincare.s3.us-east-1.amazonaws.com"]
+  },
+};
+
+module.exports = withPWA(nextConfig);
