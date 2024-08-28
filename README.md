@@ -1,36 +1,15 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Project Overview
 
-## Getting Started
+![landing](https://github.com/AmanBhujel/Nephara-Skincare/assets/132144406/bcc1f58d-d71e-42f1-8532-20a8b8720738)
 
-First, run the development server:
+![dashboard1](https://github.com/AmanBhujel/Nephara-Skincare/assets/132144406/3bb9d2e9-7f6b-436c-93fe-cfa293c0eb07)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+![dashboard2](https://github.com/AmanBhujel/Nephara-Skincare/assets/132144406/f688ac1c-c400-45bf-8a76-7f1b117f33a5)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+![dashboard3](https://github.com/AmanBhujel/Nephara-Skincare/assets/132144406/6d51ed8e-6c1e-4285-be45-41e9cf91a21a)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+![appointment](https://github.com/AmanBhujel/Nephara-Skincare/assets/132144406/b1bc6194-ad6d-4bcd-8ef2-4c16779e139a)
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+![dashboard4](https://github.com/AmanBhujel/Nephara-Skincare/assets/132144406/9dde26cd-2e44-4c5f-a567-d7d4c1ddbcfe)
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+![dashboard5](https://github.com/AmanBhujel/Nephara-Skincare/assets/132144406/9488c904-7e7e-4eb3-9793-d96727cf3aed)
